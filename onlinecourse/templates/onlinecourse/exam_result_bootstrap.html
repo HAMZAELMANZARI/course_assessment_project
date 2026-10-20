@@ -1,0 +1,43 @@
+{% extends "onlinecourse/base.html" %}
+{% block content %}
+<div class="mx-auto">
+    <!-- Pass / fail banner -->
+    {% if grade >= 80 %}
+    <div class="alert alert-success mt-4">
+        <b>Congratulations, {{ user.first_name|default:user.username }}!</b>
+        You have passed the exam and completed the course with score {{ grade }}/100
+    </div>
+    {% else %}
+    <div class="alert alert-danger mt-4">
+        <b>Failed.</b> Sorry, {{ user.first_name|default:user.username }}!
+        You have failed the exam with score {{ grade }}/100
+    </div>
+    <a class="btn btn-primary" href="{% url 'onlinecourse:course_details' course.id %}">Retake the exam</a>
+    {% endif %}
+
+    <!-- Task 6: detailed exam results -->
+    <h4 class="mt-4">Exam results</h4>
+    {% for question in course.question_set.all %}
+    <div class="card mt-1">
+        <div class="card-header"><h5>{{ question.content }}</h5></div>
+        <div class="card-body">
+            <div class="form-group">
+                {% for choice in question.choice_set.all %}
+                <div class="form-check">
+                    {% if choice.is_correct and choice in choices %}
+                    <div class="text-success">Correct answer: {{ choice.content }}</div>
+                    {% elif choice.is_correct and not choice in choices %}
+                    <div class="text-warning">Not selected: {{ choice.content }}</div>
+                    {% elif not choice.is_correct and choice in choices %}
+                    <div class="text-danger">Wrong answer: {{ choice.content }}</div>
+                    {% else %}
+                    <div>{{ choice.content }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

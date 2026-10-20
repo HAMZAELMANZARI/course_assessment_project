@@ -1,0 +1,38 @@
+{% extends "onlinecourse/base.html" %}
+{% block content %}
+<div class="mx-auto">
+    <h2 class="mt-4">Popular courses list</h2>
+    {% if courses %}
+    <div class="row">
+        {% for course in courses %}
+        <div class="col-sm-4 mb-4">
+            <div class="card h-100">
+                {% if course.image %}
+                <img class="card-img-top" src="{{ course.image.url }}" alt="course image">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ course.name }}</h5>
+                    <p class="card-text">{{ course.description }}</p>
+                    <p class="card-text"><b>Total enrolled: {{ course.total_enrollment }}</b></p>
+                    {% if user.is_authenticated %}
+                    {% if course.is_enrolled %}
+                    <a href="{% url 'onlinecourse:course_details' course.id %}" class="btn btn-primary">View course</a>
+                    {% else %}
+                    <form action="{% url 'onlinecourse:enroll' course.id %}" method="POST">
+                        {% csrf_token %}
+                        <input class="btn btn-primary" type="submit" value="Enroll">
+                    </form>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'onlinecourse:login' %}" class="btn btn-primary">Login to Enroll</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No courses are available.</p>
+    {% endif %}
+</div>
+{% endblock %}
